@@ -1,0 +1,23 @@
+[
+  {
+    "name": "paneer ",
+    "nutritional_values": "protien : 50g , cal : 223",
+    "price": 232.0,
+    "quantity": 23
+  },
+  {
+    "name": "chicken",
+    "nutritional_values": "protien : 70g , cal : 223",
+    "price": 130.0,
+    "quantity": 1
+  },
+  {
+    "name": "orange",
+    "nutritional_values": "kcal: 342, vitami c: 23mg",
+    "price": 231.0,
+    "quantity": "23 kg",
+    "category": "fruits",
+    "tags": [],
+    "image": null
+  }
+]

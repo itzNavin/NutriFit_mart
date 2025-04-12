@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Item</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Add New Item</h1>
+        
+        <form method="POST" class="add-item-form">
+            <div class="form-group">
+                <label for="name">Item Name</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="nutritional_values">Nutritional Values</label>
+                <textarea id="nutritional_values" name="nutritional_values" rows="3" required></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="price">Price</label>
+                <input type="number" id="price" name="price" step="0.01" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="quantity">Quantity</label>
+                <div class="quantity-container">
+                    <input type="number" id="quantity_value" name="quantity_value" required>
+                    <select id="quantity_unit" name="quantity_unit">
+                        <option value="pieces">Pieces</option>
+                        <option value="kg">Kilograms</option>
+                        <option value="g">Grams</option>
+                        <option value="ml">Milliliters</option>
+                        <option value="l">Liters</option>
+                        <option value="dozen">Dozen</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="category">Category</label>
+                <select id="category" name="category">
+                    <option value="vegetables">Vegetables</option>
+                    <option value="fruits">Fruits</option>
+                    <option value="dairy">Dairy</option>
+                    <option value="meat">Meat</option>
+                    <option value="snacks">Snacks</option>
+                    <option value="beverages">Beverages</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="tags">Tags (optional)</label>
+                <input type="text" id="tags" name="tags">
+            </div>
+            
+            <div class="form-group">
+                <label for="image">Product Image (optional)</label>
+                <input type="file" id="image" name="image" accept="image/*">
+            </div>
+            
+            <button type="submit" class="submit-button">Add Item</button>
+        </form>
+        
+        <div class="button-container">
+            <a href="{{ url_for('index') }}" class="button">Back to Home</a>
+        </div>
+    </div>
+</body>
+</html>

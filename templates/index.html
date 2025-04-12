@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dietary Shopping Catalog</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1 class="header-title">NutriFitMart</h1>
+        
+        <div class="qr-code">
+            <img src="{{ qr_code_path }}" alt="QR Code for Catalog">
+        </div>
+
+        <div class="button-container">
+            <a href="{{ url_for('products') }}" class="button">Products</a>
+            <a href="{{ url_for('add') }}" class="button">Add Items</a>
+            <a href="{{ url_for('scan') }}" class="button">Scan</a>
+        </div>
+    </div>
+</body>
+</html>

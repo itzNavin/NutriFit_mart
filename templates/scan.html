@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scan Barcode</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Scan Barcode</h1>
+        
+        <div class="scan-options">
+            <div class="scan-option">
+                <h2>Live Camera Scan</h2>
+                <button id="start-scan">Start Scanning</button>
+                <div id="reader" style="display: none;"></div>
+                <div id="result"></div>
+            </div>
+            
+            <div class="scan-option">
+                <h2>Upload Image to Scan</h2>
+                <form id="upload-form" method="POST" enctype="multipart/form-data">
+                    <input type="file" id="image-upload" name="image" accept="image/*" required>
+                    <button type="submit">Upload and Scan</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="button-container">
+            <a href="{{ url_for('index') }}" class="button">Back to Home</a>
+        </div>
+    </div>
+
+    <script>
+        const startScanButton = document.getElementById('start-scan');
+        const readerElement = document.getElementById('reader');
+        const resultElement = document.getElementById('result');
+        
+        startScanButton.addEventListener('click', async () => {
+            try {
+                // Request camera access
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                stream.getTracks().forEach(track => track.stop());
+                
+                // Initialize the scanner
+                const html5QrcodeScanner = new Html5QrcodeScanner(
+                    "reader", 
+                    {
+                        fps: 10,
+                        qrbox: { width: 250, height: 250 }
+                    },
+                    false // Use environment camera by default
+                );
+                
+                // Set up scan callback
+                html5QrcodeScanner.render((decodedText, decodedResult) => {
+                    console.log("Scanned content:", decodedText);
+                    resultElement.textContent = "Scanned: " + decodedText;
+                    
+                    // You can add additional logic here to handle the scanned data
+                    // For example, redirect to another page or add the item to the catalog
+                });
+                
+                readerElement.style.display = 'block';
+            } catch (err) {
+                console.error("Error starting scanner:", err);
+                resultElement.textContent = "Error: Unable to access camera. Please allow camera permissions.";
+            }
+        });
+        
+        // Handle image upload form submission
+        document.getElementById('upload-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const fileInput = document.getElementById('image-upload');
+            const file = fileInput.files[0];
+            
+            if (file) {
+                const formData = new FormData();
+                formData.append('image', file);
+                
+                fetch('/scan', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        resultElement.textContent = data.message;
+                    } else if (data.error) {
+                        resultElement.textContent = data.error;
+                    }
+                })
+                .catch(error => {
+                    resultElement.textContent = 'Error processing the uploaded image';
+                });
+            }
+        });
+    </script>
+</body>
+</html>

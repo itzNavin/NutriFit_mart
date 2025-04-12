@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Products</h1>
+        
+        <div class="button-container">
+            <a href="{{ url_for('add') }}" class="button">Add Items</a>
+            <a href="{{ url_for('index') }}" class="button">Back to Home</a>
+        </div>
+        
+        <table class="product-table">
+            <thead>
+                <tr>
+                    <th>Item Name</th>
+                    <th>Nutritional Values</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Category</th>
+                    <th>Tags</th>
+                    <th>Image</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in catalog %}
+                <tr>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.nutritional_values }}</td>
+                    <td>{{ item.price }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.category }}</td>
+                    <td>
+                        {% if item.tags %}
+                        <div class="tags">
+                            {% for tag in item.tags %}
+                            <span class="tag">{{ tag.strip() }}</span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if item.image %}
+                        <img src="{{ url_for('static', filename='uploads/' + item.image) }}" alt="{{ item.name }}" class="product-image">
+                        {% else %}
+                        <span>No image</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <form action="{{ url_for('delete', index=loop.index0) }}" method="POST">
+                            <button type="submit" class="button">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

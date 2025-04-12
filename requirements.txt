@@ -1,0 +1,4 @@
+Flask==2.0.3
+opencv-python==4.5.5.64
+qrcode==7.3.1
+Pillow==9.0.1

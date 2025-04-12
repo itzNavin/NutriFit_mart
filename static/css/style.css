@@ -1,0 +1,262 @@
+/* Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(to bottom, #e6f7ff, #003366);
+    min-height: 100vh;
+    color: #003366;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Header Styles */
+.header-title {
+    font-size: 3rem;
+    color: #052252;
+    text-align: center;
+    margin: 20px 0 40px;
+    background: linear-gradient(to right, #9ee3e8, #000305);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-stroke: 0.5px #040f1d;
+}
+
+/* Button Styles */
+.button {
+    display: inline-block;
+    padding: 15px 30px;
+    background: linear-gradient(90deg, #4facfe, #00f2fe);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    margin: 10px;
+    transition: transform 0.3s ease;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+}
+
+.button:hover {
+    transform: scale(1.05);
+    background: linear-gradient(90deg, #0056b3, #003366);
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin: 30px 0;
+    flex-wrap: wrap;
+}
+
+/* Table Styles */
+/* Products List Enhancements */
+.product-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 30px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.product-table th {
+    background: linear-gradient(90deg, #4facfe, #00f2fe);
+    color: white;
+    padding: 15px;
+    text-align: center;
+}
+
+.product-table td {
+    padding: 15px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+.product-table tr:nth-child(even) {
+    background-color: rgba(240, 248, 255, 0.5);
+}
+
+.product-table tr:hover {
+    background-color: rgba(0, 242, 254, 0.1);
+}
+
+.tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.tag {
+    background: #e0f7fa;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+}
+
+.product-image {
+    max-width: 50px;
+    max-height: 50px;
+    object-fit: cover;
+}
+
+/* Form Styles */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #333;
+    font-weight: bold;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.quantity-container {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.quantity-container input {
+    flex: 1;
+}
+
+.quantity-container select {
+    flex: 1;
+}
+
+.add-item-form {
+    max-width: 600px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.submit-button {
+    background: linear-gradient(90deg, #4facfe, #00f2fe);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: transform 0.3s ease;
+    display: block;
+    margin: 20px auto;
+    width: max-content;
+}
+
+.submit-button:hover {
+    transform: scale(1.05);
+    background: linear-gradient(90deg, #0056b3, #003366);
+}
+
+/* QR Code Styles */
+.qr-code {
+    text-align: center;
+    margin: 30px 0;
+}
+
+.qr-code img {
+    max-width: 500px;
+    border: 8px solid white;
+    border-radius: 30px;
+}
+
+/* Scan Styles */
+.scan-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* Scan Page Styles */
+.scan-options {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    margin-top: 20px;
+}
+
+.scan-option {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.scan-option h2 {
+    margin-bottom: 15px;
+    color: #003366;
+}
+
+#reader {
+    width: 400px;
+    height: 300px;
+    border: 2px solid #ddd;
+    margin: 10px 0;
+    border-radius: 10px;
+}
+
+#result {
+    margin-top: 15px;
+    font-weight: bold;
+    min-height: 24px;
+}
+
+/* File Upload Styles */
+#image-upload {
+    margin: 10px 0;
+}
+
+
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .button-container {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .button {
+        width: 100%;
+        padding: 12px;
+    }
+    
+    .product-table {
+        font-size: 0.9rem;
+    }
+    
+    .form-group {
+        margin-bottom: 15px;
+    }
+    
+    .quantity-container {
+        flex-direction: column;
+        gap: 5px;
+    }
+}
