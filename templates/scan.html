@@ -6,6 +6,34 @@
     <title>Scan Barcode</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
+    <style>
+        #reader {
+            width: 100%;
+            max-width: 500px;
+            margin: 20px auto;
+        }
+        #camera-error {
+            color: red;
+            margin: 10px 0;
+        }
+        .scan-status {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .scan-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .scan-error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .scan-processing {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -15,8 +43,10 @@
             <div class="scan-option">
                 <h2>Live Camera Scan</h2>
                 <button id="start-scan">Start Scanning</button>
-                <div id="reader" style="display: none;"></div>
-                <div id="result"></div>
+                <button id="stop-scan" style="display: none;">Stop Scanning</button>
+                <div id="camera-error"></div>
+                <div id="reader"></div>
+                <div id="result" class="scan-status"></div>
             </div>
             
             <div class="scan-option">
@@ -35,41 +65,122 @@
 
     <script>
         const startScanButton = document.getElementById('start-scan');
+        const stopScanButton = document.getElementById('stop-scan');
         const readerElement = document.getElementById('reader');
         const resultElement = document.getElementById('result');
-        
+        const cameraErrorElement = document.getElementById('camera-error');
+        let html5QrcodeScanner = null;
+
+        // Function to show status messages
+        function showStatus(message, isError = false) {
+            resultElement.textContent = message;
+            resultElement.className = isError ? 'scan-status scan-error' : 'scan-status scan-success';
+        }
+
+        // Function to show processing status
+        function showProcessing(message) {
+            resultElement.textContent = message;
+            resultElement.className = 'scan-status scan-processing';
+        }
+
+        // Function to handle camera permission errors
+        function handleCameraError(error) {
+            console.error("Camera error:", error);
+            let errorMessage = "Camera access denied. Please check permissions.";
+            
+            if (error.name === 'NotAllowedError') {
+                errorMessage = "Camera permission denied. Please allow camera access.";
+            } else if (error.name === 'NotFoundError') {
+                errorMessage = "No camera found on this device.";
+            } else if (error.name === 'NotReadableError') {
+                errorMessage = "Camera is already in use by another application.";
+            }
+            
+            cameraErrorElement.textContent = errorMessage;
+            showStatus(errorMessage, true);
+        }
+
         startScanButton.addEventListener('click', async () => {
             try {
-                // Request camera access
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                stream.getTracks().forEach(track => track.stop());
+                showProcessing("Initializing scanner...");
+                cameraErrorElement.textContent = '';
                 
-                // Initialize the scanner
-                const html5QrcodeScanner = new Html5QrcodeScanner(
-                    "reader", 
+                // Check if we already have a scanner running
+                if (html5QrcodeScanner) {
+                    await html5QrcodeScanner.clear();
+                }
+
+                // Create new scanner
+                html5QrcodeScanner = new Html5QrcodeScanner(
+                    "reader",
                     {
                         fps: 10,
-                        qrbox: { width: 250, height: 250 }
+                        qrbox: { width: 250, height: 250 },
+                        rememberLastUsedCamera: true,
+                        supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA]
                     },
-                    false // Use environment camera by default
+                    true // verbose logging for debugging
                 );
-                
-                // Set up scan callback
-                html5QrcodeScanner.render((decodedText, decodedResult) => {
+
+                // Success callback
+                const onScanSuccess = (decodedText, decodedResult) => {
                     console.log("Scanned content:", decodedText);
-                    resultElement.textContent = "Scanned: " + decodedText;
+                    showProcessing("Processing scanned item...");
                     
-                    // You can add additional logic here to handle the scanned data
-                    // For example, redirect to another page or add the item to the catalog
-                });
-                
-                readerElement.style.display = 'block';
+                    // Send to server
+                    fetch('/scan', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ barcode_data: decodedText })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.message) {
+                            showStatus(data.message);
+                        } else if (data.error) {
+                            showStatus(data.error, true);
+                        }
+                    })
+                    .catch(error => {
+                        showStatus("Error communicating with server", true);
+                        console.error('Error:', error);
+                    });
+                };
+
+                // Start scanning
+                html5QrcodeScanner.render(
+                    onScanSuccess,
+                    handleCameraError
+                );
+
+                // Update UI
+                startScanButton.style.display = 'none';
+                stopScanButton.style.display = 'inline-block';
+                showStatus("Ready to scan", false);
+
             } catch (err) {
-                console.error("Error starting scanner:", err);
-                resultElement.textContent = "Error: Unable to access camera. Please allow camera permissions.";
+                handleCameraError(err);
             }
         });
-        
+
+        // Stop scanning button
+        stopScanButton.addEventListener('click', async () => {
+            try {
+                if (html5QrcodeScanner) {
+                    await html5QrcodeScanner.clear();
+                    html5QrcodeScanner = null;
+                }
+                startScanButton.style.display = 'inline-block';
+                stopScanButton.style.display = 'none';
+                showStatus("Scanner stopped", false);
+            } catch (err) {
+                console.error("Error stopping scanner:", err);
+                showStatus("Error stopping scanner", true);
+            }
+        });
+
         // Handle image upload form submission
         document.getElementById('upload-form').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -77,6 +188,7 @@
             const file = fileInput.files[0];
             
             if (file) {
+                showProcessing("Processing uploaded image...");
                 const formData = new FormData();
                 formData.append('image', file);
                 
@@ -87,13 +199,14 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.message) {
-                        resultElement.textContent = data.message;
+                        showStatus(data.message);
                     } else if (data.error) {
-                        resultElement.textContent = data.error;
+                        showStatus(data.error, true);
                     }
                 })
                 .catch(error => {
-                    resultElement.textContent = 'Error processing the uploaded image';
+                    showStatus('Error processing image', true);
+                    console.error('Error:', error);
                 });
             }
         });
